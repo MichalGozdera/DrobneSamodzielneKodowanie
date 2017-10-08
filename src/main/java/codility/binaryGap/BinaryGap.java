@@ -29,9 +29,9 @@ expected worst-case space complexity is O(1).
 
 class BinaryGap {
     public static int solution(int N) {
-        String s = Integer.toString(N, 2); //zamieniam liczbê na binarny String
-        char[] str=s.toCharArray(); //teraz zamieniam String na tablicê charów
-        //deklaracja prze³¹czników
+        String s = Integer.toString(N, 2); //zamieniam liczbÄ™ na binarny String
+        char[] str=s.toCharArray(); //teraz zamieniam String na tablicÄ™ charÃ³w
+        //deklaracja przeÅ‚Ä…cznikÃ³w
         int trig1=0;
         int trig2=0;
         for (int i=1;i<str.length;i++)
@@ -43,7 +43,7 @@ class BinaryGap {
             }
             if (trig1>0&&((str[i])==49)) { // Sprawdza czy kolejny elelement to jedynka
                 if(trig1>trig2)
-                    trig2 = trig1; //aktywacja drugiego prze³¹cznika przechowuj¹cego max gap
+                    trig2 = trig1; //aktywacja drugiego przeÅ‚Ä…cznika przechowujÄ…cego max gap
                 trig1 = 0;
             }
         }

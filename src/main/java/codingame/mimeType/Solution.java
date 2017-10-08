@@ -9,7 +9,7 @@ You have to write a program that makes it possible to detect the MIME type of a 
 You are provided with a table which associates MIME types to file extensions. You are also given a list of names of files to be transferred and for each one of these files, you must find the MIME type to be used.
 
 The extension of a file is defined as the substring which follows the last occurrence, if any, of the dot character within the file name.
-If the extension for a given file can be found in the association table (case insensitive, e.g. TXT is treated the same way as txt), then print the corresponding MIME type. If it is not possible to find the MIME type corresponding to a file, or if the file doesnít have an extension, print UNKNOWN.
+If the extension for a given file can be found in the association table (case insensitive, e.g. TXT is treated the same way as txt), then print the corresponding MIME type. If it is not possible to find the MIME type corresponding to a file, or if the file doesn≈Çt have an extension, print UNKNOWN.
  	Game Input
 Input
 Line 1: Number N of elements which make up the association table.

@@ -75,9 +75,9 @@ class Solution {
         }
         char[] napis = T.toCharArray();
         for (int i = 0; i < napis.length; i++) {
-            if ((napis[i] > 122 || napis[i] < 65) || (napis[i] > 90 && napis[i] < 97)) //wy≥apujemy wszystkie nieliterki
-                napis[i] = 91; //w tablicy artystycznej znak ? jest po Z. Z ma kod ASCII 90, wiÍc chcπc uøywaÊ ? z tablicy artystycznej dajemy mu kod 91.
-            if (napis[i] < 123 && napis[i] > 96) //ma≥e literki zamieniamy na duøe
+            if ((napis[i] > 122 || napis[i] < 65) || (napis[i] > 90 && napis[i] < 97)) //wy≈Çapujemy wszystkie nieliterki
+                napis[i] = 91; //w tablicy artystycznej znak ? jest po Z. Z ma kod ASCII 90, wiƒôc chcƒÖc u≈ºywaƒá ? z tablicy artystycznej dajemy mu kod 91.
+            if (napis[i] < 123 && napis[i] > 96) //ma≈Çe literki zamieniamy na du≈ºe
                 napis[i] = Character.toUpperCase(napis[i]);
         }
 
@@ -86,18 +86,18 @@ class Solution {
         // To debug: System.err.println("Debug messages...");
 
         for (int i = 0; i < H; i++)
-            printrow(napis, art, L, i); //wyúwietlenie artystycznej tablicy wg rzÍdÛw
+            printrow(napis, art, L, i); //wy≈õwietlenie artystycznej tablicy wg rzƒôd√≥w
     }
 
     public static void printrow(char[] napis, char[][] art, int L, int H) {
 
         for (int i = 0; i < napis.length; i++) { //iteracja po literkach z napisu podanego
 
-            for (int j = (napis[i] - 65) * L; j < (napis[i] - 64) * L; j++) //iteracja po pozycji w tablicy artycznej. Pozycja w tablicy danej literki to jej kod ASCII pomniejszony o 64 i pomnoøony o "gruboúÊ" literki
+            for (int j = (napis[i] - 65) * L; j < (napis[i] - 64) * L; j++) //iteracja po pozycji w tablicy artycznej. Pozycja w tablicy danej literki to jej kod ASCII pomniejszony o 64 i pomno≈ºony o "grubo≈õƒá" literki
             {
                 System.out.print(art[H][j]);
             }
         }
-        System.out.println(); //zamkniÍcie wiersza
+        System.out.println(); //zamkniƒôcie wiersza
     }
 }

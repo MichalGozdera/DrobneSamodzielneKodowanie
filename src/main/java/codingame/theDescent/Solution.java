@@ -19,7 +19,7 @@ Your ship crashes into a mountain
 You provide incorrect output or your program times out
  	Note
 
-Donít forget to run the tests by launching them from the ìTest casesî window. The tests provided and the validators used to calculate your score are slightly different to avoid hard-coded solutions.
+Don≈Çt forget to run the tests by launching them from the √¥Test cases√∂ window. The tests provided and the validators used to calculate your score are slightly different to avoid hard-coded solutions.
  	Game Input
 
 Within an infinite loop, read the heights of the mountains from the standard input and print to the standard output the index of the mountain to shoot.

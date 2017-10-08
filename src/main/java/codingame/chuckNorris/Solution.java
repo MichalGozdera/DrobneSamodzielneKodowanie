@@ -6,7 +6,7 @@ The Goal
 
 Binary with 0 and 1 is good, but binary with only 0, or almost, is even better! Originally, this is a concept designed by Chuck Norris to send so called unary messages.
 
-Write a program that takes an incoming message as input and displays as output the message encoded using Chuck Norris’ method.
+Write a program that takes an incoming message as input and displays as output the message encoded using Chuck Norrisâ€™ method.
 
  	Rules
 
@@ -20,7 +20,7 @@ Two consecutive blocks are used to produce a series of same value bits (only 1 o
 - Second block: the number of 0 in this block is the number of bits in the series
  	Example
 
-Let’s take a simple example with a message which consists of only one character: Capital C. C in binary is represented as 1000011, so with Chuck Norris’ technique this gives:
+Letâ€™s take a simple example with a message which consists of only one character: Capital C. C in binary is represented as 1000011, so with Chuck Norrisâ€™ technique this gives:
 
 0 0 (the first series consists of only a single 1)
 00 0000 (the second series consists of four 0)
@@ -62,24 +62,24 @@ class Solution {
         Scanner in = new Scanner(System.in);
         String MESSAGE = in.nextLine();
 
-        char[]znaczki=MESSAGE.toCharArray(); // zamiana na tablicê znaków
+        char[]znaczki=MESSAGE.toCharArray(); // zamiana na tablicÄ™ znakÃ³w
 
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < znaczki.length; i++){
-            if (znaczki[i]<64) { //jeœli coœ ma kod ASCII mniejszy ni¿ 64 to trzeba daæ 0 poprzedzaj¹ce, poniewa¿ binarna reprezenatacja znaku bêdzie tylko 7 cyfrowa.
+            if (znaczki[i]<64) { //jeÅ›li coÅ› ma kod ASCII mniejszy niÅ¼ 64 to trzeba daÄ‡ 0 poprzedzajÄ…ce, poniewaÅ¼ binarna reprezenatacja znaku bÄ™dzie tylko 7 cyfrowa.
                 s.append("0");
             }
-            s.append(Integer.toBinaryString(znaczki[i])); //tworzê Stringa scalaj¹cego binarn¹ reprezentacjê kolejnych znaków
+            s.append(Integer.toBinaryString(znaczki[i])); //tworzÄ™ Stringa scalajÄ…cego binarnÄ… reprezentacjÄ™ kolejnych znakÃ³w
         }
         String binarny = s.toString();
         StringBuilder chuck = new StringBuilder();
-        int kolejny = 1; // licznik znaków 0 lub 1
+        int kolejny = 1; // licznik znakÃ³w 0 lub 1
         for (int i = 1; i < binarny.length(); i++) {
 
             if ((binarny.charAt(i-1)) != (binarny.charAt(i))) {
 
                 printnum(chuck, Integer.parseInt(binarny.substring(i-1, i )));
-                for (int j=0;j<kolejny;j++){ //drukowanie iloœci zer wg licznika
+                for (int j=0;j<kolejny;j++){ //drukowanie iloÅ›ci zer wg licznika
                     chuck.append("0");
                 }
                 kolejny=0;
@@ -88,7 +88,7 @@ class Solution {
 
         }
         printnum(chuck, Integer.parseInt(binarny.substring(binarny.length() - 1, binarny.length())));
-        for (int j = 0; j < kolejny; j++) { //obs³uga koñcowej sekwencji
+        for (int j = 0; j < kolejny; j++) { //obsÅ‚uga koÅ„cowej sekwencji
             chuck.append("0");
         }
         chuck.deleteCharAt(0);
@@ -96,7 +96,7 @@ class Solution {
         System.out.println(chuck.toString());
     }
 
-    public static void printnum(StringBuilder s, int i) { //metoda drukuj¹ca 00 w przypadku 0 albo 0 w przypadku 1
+    public static void printnum(StringBuilder s, int i) { //metoda drukujÄ…ca 00 w przypadku 0 albo 0 w przypadku 1
         if (i == 0)
             s.append(" 00 ");
         if (i == 1)
