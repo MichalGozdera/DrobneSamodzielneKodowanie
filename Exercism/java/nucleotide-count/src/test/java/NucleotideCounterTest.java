@@ -19,7 +19,7 @@ public class NucleotideCounterTest {
         assertThat(nucleotideCounter.count('A'), is(0));
     }
 
-    @Ignore("Remove to run test")
+    //@ignore("Remove to run test")
     @Test
     public void testEmptyDnaStringHasNoNucleotides() {
         NucleotideCounter nucleotideCounter = new NucleotideCounter("");
@@ -33,14 +33,14 @@ public class NucleotideCounterTest {
         ));
     }
 
-    @Ignore("Remove to run test")
+    //@ignore("Remove to run test")
     @Test
     public void testRepetitiveCytosineGetsCounted() {
         NucleotideCounter nucleotideCounter = new NucleotideCounter("CCCCC");
         assertThat(nucleotideCounter.count('C'), is(5));
     }
 
-    @Ignore("Remove to run test")
+    //@ignore("Remove to run test")
     @Test
     public void testRepetitiveSequenceWithOnlyGuanine() {
         NucleotideCounter nucleotideCounter = new NucleotideCounter("GGGGGGGG");
@@ -54,14 +54,14 @@ public class NucleotideCounterTest {
         ));
     }
 
-    @Ignore("Remove to run test")
+    //@ignore("Remove to run test")
     @Test
     public void testCountsOnlyThymine() {
         NucleotideCounter nucleotideCounter = new NucleotideCounter("GGGGGTAACCCGG");
         assertThat(nucleotideCounter.count('T'), is(1));
     }
 
-    @Ignore("Remove to run test")
+    //@ignore("Remove to run test")
     @Test
     public void testCountsANucleotideOnlyOnce() {
         NucleotideCounter nucleotideCounter = new NucleotideCounter("CGATTGGG");
@@ -69,7 +69,7 @@ public class NucleotideCounterTest {
         assertThat(nucleotideCounter.count('T'), is(2));
     }
 
-    @Ignore("Remove to run test")
+    //@ignore("Remove to run test")
     @Test
     public void testDnaCountsDoNotChangeAfterCountingAdenine() {
         NucleotideCounter nucleotideCounter = new NucleotideCounter("GATTACA");
@@ -84,7 +84,7 @@ public class NucleotideCounterTest {
         ));
     }
 
-    @Ignore("Remove to run test")
+    //@ignore("Remove to run test")
     @Test
     public void testValidatesNucleotides() {
         expectedException.expect(IllegalArgumentException.class);
@@ -92,7 +92,7 @@ public class NucleotideCounterTest {
         nucleotideCounter.count('X');
     }
 
-    @Ignore("Remove to run test")
+    //@ignore("Remove to run test")
     @Test
     public void testCountsAllNucleotides() {
         String s = "AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTGTCTGATAGCAGC";

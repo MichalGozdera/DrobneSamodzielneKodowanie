@@ -1,0 +1,127 @@
+<!DOCTYPE=<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Kółeczka</title>
+    <style>
+
+        canvas {
+            background-color: black;
+            z-index: 1;
+        }
+    </style>
+
+</head>
+<body>
+
+<canvas id="canvas">
+
+    <script>
+        function randomNo(max) {
+            return Math.floor(Math.random() * (max + 1));
+        }
+
+        const canvas = document.getElementById('canvas');
+        canvas.width = window.innerWidth - 20;
+        canvas.height = window.innerHeight - 20;
+        const context = canvas.getContext('2d');
+        const colors = ['orange', 'blue', 'yellow', 'red', 'white', 'pink'];
+
+        class circle {
+            constructor(x, y, color, radius) {
+                this._color = color;
+                this._radius = radius;
+                this._x = x;
+                this._y = y;
+            }
+            drawCircle (){
+            context.beginPath();
+            context.arc(this._x, this._y, this._radius, 0, 2 * Math.PI, false);
+            context.fillStyle = this._color;
+            context.fill();
+            context.closePath();
+        }
+
+            textInside(text, x, y) {
+                context.fillStyle = 'white';
+                context.font= "96px Georgia";
+                context.fillText(text, x, y);
+            }
+
+
+            get color() {
+                return this._color;
+            }
+
+            set color(color) {
+                this._color = color;
+            }
+
+            get radius() {
+                return this._radius;
+            }
+
+            set radius(radius) {
+                this._radius = radius;
+            }
+
+            get x() {
+                return this._x;
+            }
+
+            set x(x) {
+                this._x = x;
+            }
+
+            get y() {
+                return this._y;
+            }
+
+            set y(y) {
+                this._y = y;
+            }
+
+        }
+
+        const circles = [];
+
+        function distance(x1, x2, y1, y2) {
+            return Math.sqrt(Math.abs(x1 - x2) * Math.abs(x1 - x2) + Math.abs(y1 - y2) * Math.abs(y1 - y2));
+        }
+
+        function isIntersect(x,y,radius, allCircles) {
+            let intersect=false;
+            for (let circlesToCheck = 0; circlesToCheck < allCircles.length; circlesToCheck++) {
+                if (distance(x, circles[circlesToCheck]._x, y, circles[circlesToCheck]._y) < (radius + circles[circlesToCheck]._radius)) {
+                    console.log("x1=" + x);
+                    console.log("x2=" + circles[circlesToCheck]._x);
+                    console.log("x1=" + y);
+                    console.log("x1=" + circles[circlesToCheck]._y);
+                    console.log("distance=" + distance(x, circles[circlesToCheck]._x, y, circles[circlesToCheck]._y));
+                    intersect = true;
+                    break;
+                }
+            }
+            return intersect;
+        }
+
+        for (let noCircle = 0; noCircle < 70; noCircle++) {
+            let color = colors[randomNo(2)];
+            let x = randomNo(window.innerWidth);
+            let y = randomNo(window.innerHeight);
+            let radius = randomNo(65);
+            let intersect=0;
+            if (isIntersect(x,y,radius,circles)){
+                noCircle--;
+                continue;
+            }
+
+            const circleO = new circle(x, y, color, radius);
+            circleO.drawCircle();
+            circles.push(circleO);
+        }
+
+    </script>
+
+</body>
+</html>
