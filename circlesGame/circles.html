@@ -5,123 +5,206 @@
     <title>Kółeczka</title>
     <style>
 
-        canvas {
+        #background {
+            position: absolute;
             background-color: black;
-            z-index: 1;
+
+        }
+
+        #player {
+            position: absolute;
+            z = index = 1;
         }
     </style>
 
 </head>
 <body>
 
-<canvas id="canvas">
+<canvas id="background"></canvas>
+<canvas id="player"></canvas>
 
-    <script>
-        function randomNo(max) {
-            return Math.floor(Math.random() * (max + 1));
+<script>
+
+
+    function randomNo(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
+    const playerCanvas = document.getElementById('player');
+    playerCanvas.width = window.innerWidth - 20;
+    playerCanvas.height = window.innerHeight - 20;
+    const playerContext = playerCanvas.getContext('2d');
+    playerContext.globalCompositeOperation = "source-over";
+    const canvas = document.getElementById('background');
+    canvas.width = window.innerWidth - 20;
+    canvas.height = window.innerHeight - 20;
+    const context = canvas.getContext('2d');
+
+
+    const colors = ['red', 'blue', 'yellow', 'orange', 'white', 'pink', 'green', 'brown'];
+
+    class circle {
+        constructor(x, y, color, radius, context) {
+            this._color = color;
+            this._radius = radius;
+            this._x = x;
+            this._y = y;
+            this._context = context;
         }
 
-        const canvas = document.getElementById('canvas');
-        canvas.width = window.innerWidth - 20;
-        canvas.height = window.innerHeight - 20;
-        const context = canvas.getContext('2d');
-        const colors = ['orange', 'blue', 'yellow', 'red', 'white', 'pink'];
-
-        class circle {
-            constructor(x, y, color, radius) {
-                this._color = color;
-                this._radius = radius;
-                this._x = x;
-                this._y = y;
-            }
-            drawCircle (){
-            context.beginPath();
-            context.arc(this._x, this._y, this._radius, 0, 2 * Math.PI, false);
-            context.fillStyle = this._color;
-            context.fill();
-            context.closePath();
+        drawCircle() {
+            this._context.beginPath();
+            this._context.arc(this._x, this._y, this._radius, 0, 2 * Math.PI, false);
+            this._context.fillStyle = this._color;
+            this._context.fill();
+            this._context.closePath();
         }
 
-            textInside(text, x, y) {
-                context.fillStyle = 'white';
-                context.font= "96px Georgia";
-                context.fillText(text, x, y);
-            }
-
-
-            get color() {
-                return this._color;
-            }
-
-            set color(color) {
-                this._color = color;
-            }
-
-            get radius() {
-                return this._radius;
-            }
-
-            set radius(radius) {
-                this._radius = radius;
-            }
-
-            get x() {
-                return this._x;
-            }
-
-            set x(x) {
-                this._x = x;
-            }
-
-            get y() {
-                return this._y;
-            }
-
-            set y(y) {
-                this._y = y;
-            }
-
+        textInside(text, x, y) {
+            this._context.fillStyle = 'white';
+            this._context.font = "10px Arial";
+            this._context.fillText(text, x, y);
         }
 
-        const circles = [];
 
-        function distance(x1, x2, y1, y2) {
-            return Math.sqrt(Math.abs(x1 - x2) * Math.abs(x1 - x2) + Math.abs(y1 - y2) * Math.abs(y1 - y2));
+        get color() {
+            return this._color;
         }
 
-        function isIntersect(x,y,radius, allCircles) {
-            let intersect=false;
-            for (let circlesToCheck = 0; circlesToCheck < allCircles.length; circlesToCheck++) {
-                if (distance(x, circles[circlesToCheck]._x, y, circles[circlesToCheck]._y) < (radius + circles[circlesToCheck]._radius)) {
-                    console.log("x1=" + x);
-                    console.log("x2=" + circles[circlesToCheck]._x);
-                    console.log("x1=" + y);
-                    console.log("x1=" + circles[circlesToCheck]._y);
-                    console.log("distance=" + distance(x, circles[circlesToCheck]._x, y, circles[circlesToCheck]._y));
-                    intersect = true;
-                    break;
-                }
-            }
-            return intersect;
+        set color(color) {
+            this._color = color;
         }
 
-        for (let noCircle = 0; noCircle < 70; noCircle++) {
-            let color = colors[randomNo(2)];
-            let x = randomNo(window.innerWidth);
-            let y = randomNo(window.innerHeight);
-            let radius = randomNo(65);
-            let intersect=0;
-            if (isIntersect(x,y,radius,circles)){
-                noCircle--;
-                continue;
-            }
+        get radius() {
+            return this._radius;
+        }
 
-            const circleO = new circle(x, y, color, radius);
+        set radius(radius) {
+            this._radius = radius;
+        }
+
+        get x() {
+            return this._x;
+        }
+
+        set x(x) {
+            this._x = x;
+        }
+
+        get y() {
+            return this._y;
+        }
+
+        set y(y) {
+            this._y = y;
+        }
+
+    }
+
+    function getMousePos(canvas, evt) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+            x: evt.clientX - rect.left,
+            y: evt.clientY - rect.top
+        };
+    }
+
+    const circles = [];
+    playCir = new circle(window.innerWidth / 2, window.innerHeight / 2, colors[randomNo(0, 2)], 15, playerContext);
+    playCir.drawCircle();
+    circles.push(playCir);
+    playerCanvas.addEventListener('mousemove', function (evt) {
+        playerContext.clearRect(0, 0, canvas.width, canvas.height);
+        let mousePos = getMousePos(playerCanvas, evt);
+        playCir._x = mousePos.x;
+        playCir._y = mousePos.y;
+        playCir.drawCircle();
+
+
+    }, false);
+
+
+    function distance(x1, x2, y1, y2) {
+        return Math.sqrt(Math.abs(x1 - x2) * Math.abs(x1 - x2) + Math.abs(y1 - y2) * Math.abs(y1 - y2));
+    }
+
+    function isIntersect(x, y, radius, allCircles) {
+        let intersect = 0;
+        for (let circlesToCheck = 1; circlesToCheck < allCircles.length; circlesToCheck++) {
+            if (distance(x, circles[circlesToCheck]._x, y, circles[circlesToCheck]._y) < (radius + circles[circlesToCheck]._radius)) {
+                intersect = circlesToCheck;
+                break;
+            }
+        }
+        return intersect;
+    }
+
+    function newCircle(x, y, color, radius, context) {
+        while (circles.length > 0 && isIntersect(x, y, radius, circles)) {
+            x = randomNo(0, window.innerWidth);
+            radius = randomNo(10, 65);
+        }
+        const circleO = new circle(x, y, color, radius, context);
+        if (circleO._context === playerContext) {
+            return;
+        }
+        else {
             circleO.drawCircle();
             circles.push(circleO);
         }
 
-    </script>
+
+    }
+
+    function initial() {
+        for (let noCircle = 0; noCircle < 44; noCircle++) {
+            let color = colors[randomNo(0, 2)];
+            let x = randomNo(0, window.innerWidth);
+            let y = randomNo(0, window.innerHeight);
+            let radius = randomNo(10, 65);
+            let intersect = 0;
+            if (isIntersect(x, y, radius, circles)) {
+                noCircle--;
+                continue;
+            }
+            newCircle(x, y, color, radius, context);
+
+        }
+    }
+
+
+    function moveCirclesDown() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        for (let cir = 1; cir < circles.length; cir++) {
+            circles[cir]._y += 1;
+            if (circles[cir]._y > canvas.height) {
+                circles.splice(cir, 1);
+               newCircle(randomNo(0, window.innerWidth), 0, colors[randomNo(0, 2)], randomNo(10, 65), context);
+            }
+            if (distance(playCir._x, circles[cir]._x, playCir._y, circles[cir]._y) < (playCir.radius + circles[cir]._radius)){
+                if (circles[cir]._color===playCir._color&&playCir.radius<100){
+                    playCir.radius++;
+                }
+                    else if(playCir.radius>10){
+                    playCir.radius--;
+                }
+                circles.splice(cir, 1);
+                newCircle(randomNo(0, window.innerWidth), 0, colors[randomNo(0, 2)], randomNo(10, 65), context);
+            }
+            circles[cir].drawCircle();
+            context.fillStyle = 'white';
+            context.font = "25px Georgia";
+            context.fillText("Ilość kółek: "+circles.length, 20, 20);
+            context.fillText("Wielkość gracza: "+playCir.radius, 20, 40);
+        }
+        requestAnimationFrame(moveCirclesDown);
+    }
+
+
+
+    initial();
+    moveCirclesDown();
+</script>
 
 </body>
 </html>
