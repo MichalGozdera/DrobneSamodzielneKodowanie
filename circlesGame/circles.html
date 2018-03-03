@@ -8,62 +8,203 @@
         #background {
             position: absolute;
             background-color: black;
-
         }
 
-        #player {
+        #menu {
+            border: 1px solid;
+            float: left;
+            width: 10%;
+            background-color: black;
+            color: white;
+        }
+
+        .colorSelector {
+            width: 23%;
+        }
+
+        #nickFront {
+            background-color: white;
+            border: 1px solid;
+            width: 20%;
+            height: 10%;
+            z-index: 2;
             position: absolute;
-            z = index = 1;
+            top: 30%;
+            left: 50%;
         }
+
+
     </style>
 
 </head>
 <body>
+<div id="nickFront"><p id="nickText">Enter your nick</p>
+    <input type="text" id="nick">
+    <button id="nickSubmit">Submit</button>
+</div>
+<div id="menu">
+    <p id="noOfCirclesGetter"></p>
+    <input type="range" min=5 max=75 value=35 id="noOfCirclesSetter">
+    <p id="droppingSpeedGetter"></p>
+    <input type="range" min=1 max=8 value=1 id="droppingSpeedSetter">
+    <p id="noOfColorsGetter"></p>
+    <input type="range" min=3 max=8 value=3 id="noOfColorsSetter">
+    <div id="colors">
+
+    </div>
+
+    <p id="playerSize"></p>
+    <p id="minimumSize"></p>
+    <p id="totalPoints"></p>
+    <button id="finish">End game</button>
+    <audio id="gameOver" src="http://wakemaniak.cba.pl/pies.mp3" preload="auto"></audio>
+
+</div>
 
 <canvas id="background"></canvas>
 <canvas id="player"></canvas>
 
 <script>
 
+    const canvas = document.getElementById('background');
+    canvas.width = window.innerWidth * 0.9 - 15;
+    canvas.height = window.innerHeight - 25;
+    const context = canvas.getContext('2d');
+    const circlesSlider = document.getElementById("noOfCirclesSetter");
+    const numberOfCircles = document.getElementById("noOfCirclesGetter");
+    const droppingSpeedSetter = document.getElementById("droppingSpeedSetter");
+    const droppingSpeedGetter = document.getElementById("droppingSpeedGetter");
+    const noOfColorsGetter = document.getElementById("noOfColorsGetter");
+    const noOfColorsSetter = document.getElementById("noOfColorsSetter");
+    const playerSize = document.getElementById("playerSize");
+    const minimumSize = document.getElementById("minimumSize");
+    const totalPoints = document.getElementById("totalPoints");
+    const colorSet = document.getElementById("colors");
+    const gameOver = document.getElementById("gameOver");
+    const menu = document.getElementById("menu");
+    const nick = document.getElementById("nick");
+    const nickFront = document.getElementById("nickFront");
+    const nickSubmit = document.getElementById("nickSubmit");
+    const finish = document.getElementById("finish");
+    let playerName = "Player";
+    menu.style.height = canvas.height + 'px';
+    let noOfColors = noOfColorsSetter.value;
+    let noOfCircles = circlesSlider.value;
+    const circles = [];
+    let isDropping = false;
+    let dropSpeed = 1;
+    let points=0;
+    let minimum=0;
+    const colors = ["#ff0000", "#0000ff", "#FFFF00", "#FFFFFF", "#C0C0C0", "#008000", "#FFA500", "#FFC0CB"];
+    const pickers = [];
 
-    function randomNo(min, max) {
-        return Math.floor(Math.random() * (max - min + 1) + min);
+    nickSubmit.addEventListener("click", function () {
+        if (nick.value) {
+            playerName = nick.value;
+            document.body.removeChild(nickFront);
+            isDropping = true;
+            moveCirclesDown();
+        }
+    });
+    finish.addEventListener("click", function () {
+        isDropping = false;
+        endAlert();
+    });
+    circlesSlider.onchange = function () {
+        let diff = circlesSlider.value - noOfCircles;
+        if (diff > 0) {
+            for (let temp = 0; temp < diff; temp++) {
+                newCircle(randomNo(0, window.innerWidth), randomNo(0, window.innerHeight), colors[randomNo(0, noOfColors)], randomNo(10, 65), noOfCircles + temp);
+            }
+        } else if (diff < 0) {
+            for (let temp = diff; temp < 0; temp++) {
+                circles.splice(Math.log(temp), 1);
+            }
+
+        }
+        noOfCircles = circlesSlider.value;
+    };
+
+    droppingSpeedSetter.onchange = function () {
+        dropSpeed = droppingSpeedSetter.value;
+    };
+
+
+    noOfColorsSetter.onchange = function () {
+        diffCol = noOfColorsSetter.value - noOfColors;
+        if (diffCol > 0) {
+            addColor(noOfColors, noOfColorsSetter.value);
+        } else if (diffCol < 0) {
+            for (let temp = diffCol; temp < 0; temp++) {
+                let nextColNo = parseInt(temp) + parseInt(noOfColors);
+                colorSet.removeChild(document.getElementById("colorPicker " + nextColNo));
+                pickers.pop();
+            }
+        }
+        noOfColors = noOfColorsSetter.value;
     }
 
-    const playerCanvas = document.getElementById('player');
-    playerCanvas.width = window.innerWidth - 20;
-    playerCanvas.height = window.innerHeight - 20;
-    const playerContext = playerCanvas.getContext('2d');
-    playerContext.globalCompositeOperation = "source-over";
-    const canvas = document.getElementById('background');
-    canvas.width = window.innerWidth - 20;
-    canvas.height = window.innerHeight - 20;
-    const context = canvas.getContext('2d');
+
+    function addColor(startIndex, endIndex) {
+        for (let temp = startIndex; temp < endIndex; temp++) {
+            let color0 = document.createElement("input");
+            color0.setAttribute("type", "color");
+            color0.setAttribute("class", "colorSelector");
+            color0.setAttribute("value", colors[temp]);
+            color0.setAttribute("id", "colorPicker " + temp);
+            pickers.push(color0);
+            //color0.addEventListener("change", wrapOnChangeColor(pickers.indexOf(color0)));
+            color0.onchange = wrapOnChangeColor(pickers.indexOf(color0));
+            colorSet.appendChild(color0);
+        }
+    }
+
+    function wrapOnChangeColor(index) {
+        return function changeColor() {
+            let oldColor = colors[index];
+            let newColor = pickers[index].value;
+            if (colors.indexOf(newColor) === -1) {
+                for (let i = 0; i < circles.length; i++) {
+                    if (circles[i]._color === oldColor) {
+                        circles[i]._color = newColor;
+                    }
+                }
+                colors[index] = pickers[index].value;
+            }
+            else {
+                pickers[index].value = oldColor;
+            }
+        }
+    }
+
+    addColor(0, 3);
 
 
-    const colors = ['red', 'blue', 'yellow', 'orange', 'white', 'pink', 'green', 'brown'];
+    function randomNo(min, max) {
+        return Math.floor(Math.random() * (max - min) + min);
+    }
+
 
     class circle {
-        constructor(x, y, color, radius, context) {
+        constructor(x, y, color, radius) {
             this._color = color;
             this._radius = radius;
             this._x = x;
             this._y = y;
-            this._context = context;
         }
 
         drawCircle() {
-            this._context.beginPath();
-            this._context.arc(this._x, this._y, this._radius, 0, 2 * Math.PI, false);
-            this._context.fillStyle = this._color;
-            this._context.fill();
-            this._context.closePath();
+            context.beginPath();
+            context.arc(this._x, this._y, this._radius, 0, 2 * Math.PI, false);
+            context.fillStyle = this._color;
+            context.fill();
+            context.closePath();
         }
 
         textInside(text, x, y) {
-            this._context.fillStyle = 'white';
-            this._context.font = "10px Arial";
-            this._context.fillText(text, x, y);
+            context.fillStyle = 'white';
+            context.font = "15px Arial";
+            context.fillText(text, x, y);
         }
 
 
@@ -109,18 +250,26 @@
         };
     }
 
-    const circles = [];
-    playCir = new circle(window.innerWidth / 2, window.innerHeight / 2, colors[randomNo(0, 2)], 15, playerContext);
-    playCir.drawCircle();
+
+    playCir = new circle(window.innerWidth / 2, window.innerHeight / 2, colors[randomNo(0, 3)], 25);
     circles.push(playCir);
-    playerCanvas.addEventListener('mousemove', function (evt) {
-        playerContext.clearRect(0, 0, canvas.width, canvas.height);
-        let mousePos = getMousePos(playerCanvas, evt);
-        playCir._x = mousePos.x;
-        playCir._y = mousePos.y;
-        playCir.drawCircle();
+
+    canvas.addEventListener('mousemove', function (evt) {
+        let mousePos = getMousePos(canvas, evt);
+        if (isDropping) {
+            playCir._x = mousePos.x;
+            playCir._y = mousePos.y;
+        }
+    }, false);
 
 
+    canvas.addEventListener('click', function (evt) {
+        if (isDropping) {
+            isDropping = false;
+        } else {
+            isDropping = true;
+            moveCirclesDown();
+        }
     }, false);
 
 
@@ -130,7 +279,7 @@
 
     function isIntersect(x, y, radius, allCircles) {
         let intersect = 0;
-        for (let circlesToCheck = 1; circlesToCheck < allCircles.length; circlesToCheck++) {
+        for (let circlesToCheck = 0; circlesToCheck < allCircles.length; circlesToCheck++) {
             if (distance(x, circles[circlesToCheck]._x, y, circles[circlesToCheck]._y) < (radius + circles[circlesToCheck]._radius)) {
                 intersect = circlesToCheck;
                 break;
@@ -139,26 +288,24 @@
         return intersect;
     }
 
-    function newCircle(x, y, color, radius, context) {
+    function newCircle(x, y, color, radius, index) {
         while (circles.length > 0 && isIntersect(x, y, radius, circles)) {
             x = randomNo(0, window.innerWidth);
             radius = randomNo(10, 65);
         }
-        const circleO = new circle(x, y, color, radius, context);
-        if (circleO._context === playerContext) {
-            return;
-        }
-        else {
-            circleO.drawCircle();
-            circles.push(circleO);
-        }
+        const circleO = new circle(x, y, color, radius);
+
+
+        circleO.drawCircle();
+        circles.splice(index, 0, circleO);
 
 
     }
 
+
     function initial() {
-        for (let noCircle = 0; noCircle < 44; noCircle++) {
-            let color = colors[randomNo(0, 2)];
+        for (let noCircle = 1; noCircle < noOfCircles; noCircle++) {
+            let color = colors[randomNo(0, noOfColors)];
             let x = randomNo(0, window.innerWidth);
             let y = randomNo(0, window.innerHeight);
             let radius = randomNo(10, 65);
@@ -167,43 +314,80 @@
                 noCircle--;
                 continue;
             }
-            newCircle(x, y, color, radius, context);
+            newCircle(x, y, color, radius, noCircle);
 
         }
     }
 
+    function endAlert() {
+        if (confirm("You have lost!\n\n\nPlay Again?")) {
+            window.location.reload(false);
+        } else {
+            window.location.replace("https://www.youtube.com/watch?v=EtaPo7PRVqg");
+        }
+    }
+let max=0;
 
     function moveCirclesDown() {
+
         context.clearRect(0, 0, canvas.width, canvas.height);
+        playCir.drawCircle();
+        playCir.textInside(playerName, playCir.x, playCir.y);
         for (let cir = 1; cir < circles.length; cir++) {
-            circles[cir]._y += 1;
+            let oldY = circles[cir]._y;
+            let newY = parseInt(oldY) + parseInt(dropSpeed);
+            circles[cir]._y = newY;
             if (circles[cir]._y > canvas.height) {
                 circles.splice(cir, 1);
-               newCircle(randomNo(0, window.innerWidth), 0, colors[randomNo(0, 2)], randomNo(10, 65), context);
+                newCircle(randomNo(0, window.innerWidth), 0, colors[randomNo(0, noOfColors)], randomNo(10, 65), cir);
             }
-            if (distance(playCir._x, circles[cir]._x, playCir._y, circles[cir]._y) < (playCir.radius + circles[cir]._radius)){
-                if (circles[cir]._color===playCir._color&&playCir.radius<100){
+            if (distance(playCir._x, circles[cir]._x, playCir._y, circles[cir]._y) < (playCir.radius + circles[cir]._radius)) {
+                if (circles[cir]._color === playCir._color) {
                     playCir.radius++;
+                    points+=Math.round(dropSpeed*noOfColors*noOfCircles/100);
+                    max=Math.round(0.8*playCir.radius);
+                    if(max>minimum){
+                        minimum=max;
+                    }
                 }
-                    else if(playCir.radius>10){
+                else if (playCir.radius > minimum) {
                     playCir.radius--;
                 }
                 circles.splice(cir, 1);
-                newCircle(randomNo(0, window.innerWidth), 0, colors[randomNo(0, 2)], randomNo(10, 65), context);
+                newCircle(randomNo(0, window.innerWidth), 0, colors[randomNo(0, noOfColors)], randomNo(10, 65), cir);
             }
             circles[cir].drawCircle();
-            context.fillStyle = 'white';
-            context.font = "25px Georgia";
-            context.fillText("Ilość kółek: "+circles.length, 20, 20);
-            context.fillText("Wielkość gracza: "+playCir.radius, 20, 40);
+
         }
-        requestAnimationFrame(moveCirclesDown);
+        minimum+=0.002;
+        if (playCir.radius < minimum) {
+            gameOver.pause();
+            isDropping = false;
+            endAlert();
+        }
+        if (isDropping) {
+            gameOver.play();
+            requestAnimationFrame(moveCirclesDown);
+        }
+
+        playerSize.innerHTML = playerName + " size " + playCir.radius;
+        minimumSize.innerHTML = "Minimum size " + Math.round(minimum);
+        totalPoints.innerHTML = " Total points " + points;
+        numberOfCircles.innerHTML = "Number of circles:" + noOfCircles;
+        droppingSpeedGetter.innerHTML = "Dropping Speed: " + dropSpeed;
+        noOfColorsGetter.innerHTML = "Number of colors: " + noOfColors;
+
     }
 
-
-
+    alert("Drag the PlayerCircle and touch circles\nwith the same color to make your circle bigger and bigger.\n" +
+        "If you touch circle with different color than yours,\nyou will be smaller.\n\n" +
+        "Click on the board to pause/unpause\n\n\n" +
+        "When your size is smaller than the minimum size, game will be over");
     initial();
+
     moveCirclesDown();
+
+
 </script>
 
 </body>
