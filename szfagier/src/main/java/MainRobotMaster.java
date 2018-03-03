@@ -3,7 +3,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
 import java.io.*;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -12,8 +12,10 @@ import java.util.concurrent.Future;
 public class MainRobotMaster {
 
     public static boolean flag = false;
+    public static Map<String, List<String>> map = new HashMap<String, List<String>>();
 
     public static void main(String[] args) {
+
         connectWithMark();
     }
 
@@ -26,11 +28,13 @@ public class MainRobotMaster {
                     socket.getOutputStream());
             InputStreamReader in = new InputStreamReader(
                     socket.getInputStream());
-            //Listener listener = new Listener();
-            //ExecutorService executorService = Executors.newSingleThreadExecutor();
-           //// Future<String> future = executorService.submit(listener);
-            System.out.println(getString(in, " ;") + "\t");
+            Listener listener = new Listener();
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
+            Future<String> future = executorService.submit(listener);
             String result = null;
+            PrintWriter pw = new PrintWriter(out, true);
+            pw.printf("0;");
+            System.out.print(getString(in, "0;") + "\t");
             while (true) {
 
 //                Scanner reader = new Scanner(System.in);
@@ -39,27 +43,31 @@ public class MainRobotMaster {
 
                 // send
 
-                PrintWriter pw = new PrintWriter(out, true);
+                pw = new PrintWriter(out, true);
 
-
-                String command = "1;";
-                pw.printf(command);
+                String command = null;
+                //String command = "1;";
+                // pw.printf(command);
                 // receive the reply
 
-                System.out.print(getString(in, command) + "\t");
-                command = "2;";
-                pw.printf(command);
-                System.out.print(getString(in, command) + "\t");
-                command = "3;";
-                pw.printf(command);
-                System.out.print(getString(in, command) + "\t");
-//                if (flag == true) {
-//                    flag = false;
-//                    result=future.get();
-//                    pw.printf(result);
-//                    System.out.print(getString(in, command) + "\t");
-//                    future = executorService.submit(listener);
-//                }
+                //  System.out.print(getString(in, command) + "\t");
+                // command = "2;";
+                //   pw.printf(command);
+                //    System.out.print(getString(in, command) + "\t");
+                // command = "3;";
+                //  pw.printf(command);
+                //     System.out.print(getString(in, command) + "\t");
+                if (flag == true) {
+                    flag = false;
+                    result = future.get();
+                    if (result == null) {
+                        pw.printf("ja spierdalam");
+                        System.exit(0);
+                    }
+                    pw.printf(result);
+                    System.out.print(getString(in, result) + "\t");
+                    future = executorService.submit(listener);
+                }
                 System.out.println();
 
                 Thread.sleep(1000);
@@ -69,10 +77,9 @@ public class MainRobotMaster {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
-//        } catch (ExecutionException e) {
-//            e.printStackTrace();
-//        }
         return null;
     }
 
@@ -87,10 +94,29 @@ public class MainRobotMaster {
         }
         if (reply.endsWith(";")) {
             reply = reply.substring(0, reply.length() - 1);
-            reply = command + "\t" + reply;
+            parseInitialMessage(reply, command);
             return reply;
         }
         return null;
+    }
+
+    public static void parseInitialMessage(String msg, String command) {
+        if (command.equals("0")) {
+            String[] allKeys=msg.split("@");
+            for(String string:allKeys){
+                String[] initialConfigMap = string.split("#");
+                List<String> nestedList=new ArrayList<>();
+                nestedList.add(initialConfigMap[1]);
+                nestedList.add("");
+                map.put(initialConfigMap[0], nestedList);
+                System.out.println(map);
+            }
+        } else {
+            List<String> nestedList = map.get(command);
+            String value = null;
+            nestedList.set(1,msg);
+            System.out.println(map);
+        }
     }
 
 }
