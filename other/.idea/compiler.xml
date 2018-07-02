@@ -7,10 +7,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="Other" />
+        <module name="tabliczkaMnozenia" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="Other" target="1.5" />
+      <module name="tabliczkaMnozenia" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>
