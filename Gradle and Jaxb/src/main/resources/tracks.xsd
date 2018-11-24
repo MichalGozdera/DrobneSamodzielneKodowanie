@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="tracks">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="track" maxOccurs="unbounded" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:byte" name="number"/>
+              <xs:element name="location" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="address">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element type="xs:string" name="street"/>
+                          <xs:element type="xs:string" name="city"/>
+                          <xs:element type="xs:byte" name="houseNumber"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element type="xs:short" name="locationNo"/>
+                    <xs:element name="point">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element type="xs:float" name="altitude"/>
+                          <xs:element type="xs:float" name="latitude"/>
+                          <xs:element type="xs:float" name="longitude"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element type="xs:dateTime" name="time"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

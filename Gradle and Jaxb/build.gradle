@@ -1,0 +1,70 @@
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
+    compile group: 'com.github.rkumsher', name: 'utils', version: '1.1'
+
+
+}
+
+//  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Task : XJC ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+final def packageName = "cokeman"
+def producesDir = "src/main/java"
+configurations { provided }
+project.ext.generatedSrcDir = file("$producesDir/generated")
+dependencies {
+    provided 'com.sun.xml.bind:jaxb-impl:2.2.6'
+    provided 'com.sun.xml.bind:jaxb-xjc:2.2.6'
+}
+
+
+task jaxb {
+    def tree = fileTree('src') {
+        include '**/*.xsd'
+    }
+    println 'Starting JAXB XJC...'
+    ext {
+        packagePath = packageName.replaceAll("\\.", "/")
+        destDir = new File(project.ext.generatedSrcDir, packagePath)
+    }
+
+    outputs.dir destDir
+    project.ext.generatedSrcDir.mkdirs()
+    ant.taskdef(name: 'xjc',
+            classname: 'com.sun.tools.xjc.XJCTask',
+            classpath: configurations.provided.asPath)
+
+
+
+    doLast {
+        project.ext.generatedSrcDir.mkdirs()
+        tree.each { File file ->
+            print(file.canonicalPath)
+            def nameWithoutExt = file.name.replaceFirst(~/\.[^\.]+$/, '')
+            String someString = destDir.toString().concat("\\").concat(nameWithoutExt).concat(".java")
+            File targ = new File(someString)
+            if (!targ.exists()) {
+            print(targ.name)
+            ant.xjc(package: packageName,
+                    destdir: project.ext.generatedSrcDir,
+                    schema: file.canonicalPath
+            )
+        }
+        }
+    }
+
+    task generateSources() {}
+    sourceSets.main.java.srcDirs += project.ext.generatedSrcDir
+    generateSources.dependsOn jaxb
+    compileJava.dependsOn jaxb
+    compileJava.dependsOn generateSources
+}
